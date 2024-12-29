@@ -1,0 +1,51 @@
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      paymentServices:
+        fallbackEnabled: true
+        fallbackMethod: fallbackPayment
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 1
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
+
+
+  retry:
+    instances:
+      paymentServices:
+        maxRetryAttempts: 5
+        waitDuration: 10s
+
+  timelimiter:
+    intances:
+      paymentServices:
+        timeoutDuration: 3s
+
